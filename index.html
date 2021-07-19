@@ -1,33 +1,55 @@
+<!-- Project 6: Build a three-question quiz.
+
+Requirements:
+-Create a Github repository for this project. 
+-Create an HTML form with a three-question quiz
+-Each question should have four multiple-choice answers to choose from.
+-When the user submits the quiz, add a message underneath each question letting them know if they got it right/wrong (give them the correct answer). -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
-     <div id="container">
-        <div id="start">Start Quiz!</div>
-        <div id="quiz" style="display: none">
-            <div id="question"></div>
-            <div id="qImg"></div>
-            <div id="choices">
-                <div class="choice" id="A" onclick="checkAnswer('A')"></div>
-                <div class="choice" id="B" onclick="checkAnswer('B')"></div>
-                <div class="choice" id="C" onclick="checkAnswer('C')"></div>
-            </div>
-            <div id="timer">
-                <div id="counter"></div>
-                <div id="btimeGauge"></div>
-                <div id="timeGauge"></div>
-            </div>
-            <div id="progress"></div>
-        </div>
-        <div id="score" style="display: none"></div>
-    </div>
-
-    <script src="app.js" ></script>
+    <div id="quiz"></div>
+    <div id="submit">Get Results</div>
+    <div id="results"></div>
+    <script src="app.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,156 +1,122 @@
-// select all elements
-const start = document.getElementById("start");
-const quiz = document.getElementById("quiz");
-const question = document.getElementById("question");
-const qImg = document.getElementById("qImg");
-const choiceA = document.getElementById("A");
-const choiceB = document.getElementById("B");
-const choiceC = document.getElementById("C");
-const counter = document.getElementById("counter");
-const timeGauge = document.getElementById("timeGauge");
-const progress = document.getElementById("progress");
-const scoreDiv = document.getElementById("scoreContainer");
+
+const quizContainer = document.getElementById('quiz');
+const resultsContainer = document.getElementById('results');
+const submitButton = document.getElementById('submit');
 
 // create our questions
-let questions = [
+const  myQuestions = [
     {
-        question : "What does HTML stand for?",
-        // imgSrc : "img/html.png",
-        choiceA : "Correct",
-        choiceB : "Wrong",
-        choiceC : "Wrong",
-        correct : "A"
-    },{
-        question : "What does CSS stand for?",
-        // imgSrc : "img/css.png",
-        choiceA : "Wrong",
-        choiceB : "Correct",
-        choiceC : "Wrong",
-        correct : "B"
-    },{
-        question : "What does JS stand for?",
-        // imgSrc : "img/js.png",
-        choiceA : "Wrong",
-        choiceB : "Wrong",
-        choiceC : "Correct",
-        correct : "C"
+    question: "Who is the best javascript mentor?",
+    answers: { 
+    // imgSrc: "img/picture2.png",
+    a: "TJ",
+    b: "Al Einstein",
+    c: "Nik Tesla",
+    d: "John Connor",
+    },
+     correctAnswer: "a"
+},
+    {
+    question: "What is the most popular javascript library or framework?",
+    answers: { 
+    // imgSrc: "img/picture2.png",
+    a: "Angular",
+    b: "Vue",
+    c: "React",
+    d: "Other",
+    },
+     correctAnswer: "c"  
+},
+    {
+    question: "What is the most popular front end programming language?",
+    answers: { 
+    // imgSrc: "img/picture2.png",
+    a: "Html",
+    b: "JavaScript",
+    c: "CSS",
+    d: "Other",
+    },
+    correctAnswer: "b"
+}
+ ];
+
+
+function buildQuiz(){
+  // variable to store the HTML output
+  const output = [];
+
+  // for each question...
+  myQuestions.forEach(
+    (currentQuestion, questionNumber) => {
+
+        console.log('hello')
+      // variable to store the list of possible answers
+      const answers = [];
+
+      // and for each available answer...
+      for(letter in currentQuestion.answers){
+
+        // ...add an HTML radio button
+        answers.push(
+          `<label>
+            <input type="radio" name="question${questionNumber}" value="${letter}">
+            ${letter} :
+            ${currentQuestion.answers[letter]}
+          </label>`
+        );
+      }
+
+      // add this question and its answers to the output
+      output.push(
+        `<div class="question"> ${currentQuestion.question} </div>
+        <div class="answers"> ${answers.join('')} </div>`
+      );
     }
-];
+  );
 
-// create some variables
-
-const lastQuestion = questions.length - 1;
-let runningQuestion = 0;
-let count = 0;
-const questionTime = 10; // 10s
-const gaugeWidth = 150; // 150px
-const gaugeUnit = gaugeWidth / questionTime;
-let TIMER;
-let score = 0;
-
-// render a question
-function renderQuestion(){
-    let q = questions[runningQuestion];
-    
-    question.innerHTML = "<p>"+ q.question +"</p>";
-    qImg.innerHTML = "<img src="+ q.imgSrc +">";
-    choiceA.innerHTML = q.choiceA;
-    choiceB.innerHTML = q.choiceB;
-    choiceC.innerHTML = q.choiceC;
+  // finally combine our output list into one string of HTML and put it on the page
+  quizContainer.innerHTML = output.join('');
 }
 
-start.addEventListener("click",startQuiz);
 
-// start quiz
-function startQuiz(){
-    start.style.display = "none";
-    renderQuestion();
-    quiz.style.display = "block";
-    renderProgress();
-    renderCounter();
-    TIMER = setInterval(renderCounter,1000); // 1000ms = 1s
-}
+function showResults() {
+    //gather answer containers from our quiz
+    const answerContainers = quizContainer.querySelectorAll('.answers');
 
-// render progress
-function renderProgress(){
-    for(let qIndex = 0; qIndex <= lastQuestion; qIndex++){
-        progress.innerHTML += "<div class='prog' id="+ qIndex +"></div>";
-    }
-}
+    //keep track of user's answers
+    let numCorrect = 0;
 
-// counter render
+    //for each question...
+    myQuestions.forEach((currentQuestion, questionNumber) => {
+        //find selected answer 
+        const answerContainer = answerContainers[questionNumber];
+        const selector = `input[name=question${questionNumber}]:checked`;
+        const userAnswer = (answerContainer.querySelector(selector) || {}).nodeValue;
 
-function renderCounter(){
-    if(count <= questionTime){
-        counter.innerHTML = count;
-        timeGauge.style.width = count * gaugeUnit + "px";
-        count++
-    }else{
-        count = 0;
-        // change progress color to red
-        answerIsWrong();
-        if(runningQuestion < lastQuestion){
-            runningQuestion++;
-            renderQuestion();
-        }else{
-            // end the quiz and show the score
-            clearInterval(TIMER);
-            scoreRender();
+        //if answer is correct 
+        if(userAnswer === currentQuestion.correctAnswer){
+            //add to the number of correct answers 
+            numCorrect++;
+
+            //color the answers green
+            answerContainers[questionNumber].style.color = 'lightgreen';
         }
-    }
+        //if answer is wrong or blank
+        else{
+            //color the answers red
+            answerContainers[questionNumber].style.color = 'red';
+        }
+        //show number of correct answers out of total
+        resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
+    });
+
 }
 
-// checkAnwer
+//display quiz right away
+buildQuiz();
 
-function checkAnswer(answer){
-    if( answer == questions[runningQuestion].correct){
-        // answer is correct
-        score++;
-        // change progress color to green
-        answerIsCorrect();
-    }else{
-        // answer is wrong
-        // change progress color to red
-        answerIsWrong();
-    }
-    count = 0;
-    if(runningQuestion < lastQuestion){
-        runningQuestion++;
-        renderQuestion();
-    }else{
-        // end the quiz and show the score
-        clearInterval(TIMER);
-        scoreRender();
-    }
-}
-
-// answer is correct
-function answerIsCorrect(){
-    document.getElementById(runningQuestion).style.backgroundColor = "#0f0";
-}
-
-// answer is Wrong
-function answerIsWrong(){
-    document.getElementById(runningQuestion).style.backgroundColor = "#f00";
-}
-
-// score render
-function scoreRender(){
-    scoreDiv.style.display = "block";
-    
-    // calculate the amount of question percent answered by the user
-    const scorePerCent = Math.round(100 * score/questions.length);
-    
-    // choose the image based on the scorePerCent
-    let img = (scorePerCent >= 80) ? "img/5.png" :
-              (scorePerCent >= 60) ? "img/4.png" :
-              (scorePerCent >= 40) ? "img/3.png" :
-              (scorePerCent >= 20) ? "img/2.png" :
-              "img/1.png";
-    
-    scoreDiv.innerHTML = "<img src="+ img +">";
-    scoreDiv.innerHTML += "<p>"+ scorePerCent +"%</p>";
-}
+//on submit; show results
+submitButton.addEventListener('click', showResults);
 
 
 
@@ -159,181 +125,113 @@ function scoreRender(){
 
 
 
+// //Structure
+// function generateQuiz(questions, quizContainer, resultsContainer, submitButton){
 
+// function showQuestions(questions, quizContainer){
+// 	// we'll need a place to store the output and the answer choices
+// 	var output = [];
+// 	var answers;
 
+// 	// for each question...
+// 	for(var i=0; i<questions.length; i++){
+		
+// 		// first reset the list of answers
+// 		answers = [];
 
+// 		// for each available answer to this question...
+// 		for(letter in questions[i].answers){
 
+// 			// ...add an html radio button
+// 			answers.push(
+// 				'<label>'
+// 					+ '<input type="radio" name="question'+i+'" value="'+letter+'">'
+// 					+ letter + ': ' 
+// 					+ questions[i].answers[letter] 
+// 				+ '</label>'
+// 			);
+// 		}
 
+// 		// add this question and its answers to the output
+// 		output.push(
+// 			'<div class="question">' + questions[i].question + '</div>'
+// 			+ '<div class="answers">' + answers.join('') + '</div>'
+// 		);
+// 	}
 
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-// //before rendering a question; hide display
-// start.style.display = "none";
-// renderQuestion();
-// quiz.style.display = "block"
-
-// //render progress
-// function renderProgress() {
-//     for (let qIndex = 0; qIndex <= lastQuestion; qIndex++){
-//         progress.innerHTML =+ "div class='prog' id=" + qIndex +"></div>";
-//     }
+// 	// finally combine our output list into one string of html and put it on the page
+// 	quizContainer.innerHTML = output.join('');
 // }
 
+// 	function showResults(questions, quizContainer, resultsContainer){
+//         console.log('hello')
+// 		//gather answer containers from quiz  
+//         var answerContainers = quizContainer.querySelectorAll('.answers');
 
+//         //keep track of users answers 
+//         var userAnswer = '';
+//         var numCorrect = 0;
 
+//         //for each question
+//         for(var i = 0; i < questions.length; i++){
+//             //find selected answer 
+//             userAnswer = (answerContainers[i].querySelector('input[name=question'+i+']:checked')||{}).value;
 
-
-
-
-
-
-
-// //6.  start Quiz
-// //create a variable start and then add a eventListener. for click--run startQuiz func
-// // create startQuiz function.
-// const start = document.getElementById("start");
-
-// start.addEventListener("click", startQuiz());
-//  let TIMER; //declare outside the function, so it's global
-// function startQuiz() {
-//     start.style.display = "none"; // hides the div
-//     counterRender(); // render the counter-- set count & timeGuage to zero
-//     TIMER = setInterval(counterRender, 1000) // to call the counter every 1 sec
-//     progressRender(); // render progres bar
-//     questionRender(); // render question
-//     quiz.style.display = "block"; // display quiz
-// }
-
-// //7.  create scoreRender(); 
-// function scoreRender() {
-//     scoreContainer.style.display = "block"; // in html display is none.  This shows it.
-//     // calculate the score percent
-//     let scorePerCent = Math.round(100 * score / questions.length);
-//     let img =  ( scorePerCent >= 80) ? "img/5.png" : 
-//                ( scorePerCent >= 60) ? "img/4.png" : 
-//                ( scorePerCent >= 40) ? "img/3.png" : 
-//                ( scorePerCent >= 20) ? "img/2.png" : "img/1.png";
-    
-//     scoreContainer.innerHTML = "<img src=" + img + "><P>" + scorePerCent + "%</P>";
-// }
-
-// // 2A. create variables.
-// let lastQuestionIndex = questions.length - 1;
-// let runningQuestionIndex = 0;
-// //2A.
-// function renderQuestion() { 
-//     //displaying to the user the first q--then need to increment++ to next q
-//     let q = questions[runningQuestionIndex];
-//     qImg.innerHTML = "<img src=" + q.imgSrc + ">";
-//     question.innerHTML = "<p>" + q.question + "</p>";
-//     choiceA.innerHTML = q.choiceA;
-//     choiceB.innerHTML = q.choiceB;
-//     choiceC.innerHTML = q.choiceC;
-
-// }
-
-// //3. Progress Render -- goes through the questions
-// // checks if the answer is correct or wrong and displays the output
-// function progressRender() {
-//     for (let qIndex = 0; qIndex <= lastQuestionIndex; qIndex++) {
-//         progress.innerHTML += "<div class='prog' id=" + qIndex + "></div>";
-//     }
-//     function answerIsCorrect(){
-//         document.getElementById(runningQuestionIndex).style.backgroundColor = "green"; //index is at 0
-//     }
-//     function answerIsWrong(){
-//         document.getElementById(runningQuestionIndex).style.backgroundColor = "red"; //changes on wrong
-// }
-
-// //4. Counter Render
-// // create instance and variables.  Then function.
-// const questionTime = 10;
-// const gaugeWidth = 150;
-// let count = 0;
-// const guageProgressUnit = gaugeWidth / questionTime;
-
-// //will be called every one sec
-// function counterRender() { //create a condition
-//     if (count <= questionTime) {
-//         counter.innerHTML = count;
-//         //if guage is zero then count is zero and increments together til 15sec or 150px
-//         timeGauge.style.width = guageProgressUnit * count + "px";
-//         count++;
-// } else { //if exceeds the counter 
-//     count = 0;
-//     answerIsWrong(); // call that function because question time was exceeded.
-//     if (runningQuestionIndex < lastQuestionIndex) { //need to check if at last question
-//         runningQuestionIndex++; //to move to next question
-//         questionRender(); // call this function to render the next question
-//     } else{
-//         clearInterval(TIMER);
-//         scoreRender(); // show score to user
-//     }
-
-// }
-
-// // 4A.  call the counterRender every 1sec.
-// //setInterval function that takes two arguments.  the counterRender function and time.
-// // then assign that to a variable= TIMER, so the setInterval can stop running setInterval and go to 
-// //clearInterval(Timer)
-
-// let TIMER = setInterval(counterRender, 1000);
-
-// // 5. create checkAnswer().  pass in argument answer, which is based on the selections
-// // to increment create a variable called score with a 0 value.
-
-// let score = 0;
-
-// function checkAnswer(answer) {
-//     if (questions[runningQuestionIndex].correct == answer) { 
-//         //if answer is true increment score 
-//         score++
-//         answerIsCorrect();// update progress bar
-//     } else {
-//         answerIsWrong();
-//     } 
-//         if (runningQuestionIndex < lastQuestionIndex) {
-//             //check to see if this is the last question
-//             count = 0; // start over for zero for next question
-//             runningQuestionIndex++; // increment to new question
-//             questionRender(); // display the new question
-//         }else {
-//             clearInterval(TIMER);
-//             scoreRender(); //show score to user
+//             //if answer is Correct
+//             if(userAnswer===questions[i].correctAnswer){
+//                 //add to the number of correct answers
+//                 numCorrect++;
+//                 //color the answers green
+//                 answerContainers[i].style.color = 'lightgreen';
+//             }
+//             // else if(userAnswer !== questions[i].correctAnswer){
+//             //      var showCorrect = correctAnswer.style.color = 'lightgreen';
+//             // }
+//             //if answer is wrong or blank
+//             else {
+//                 // color the answers red                     
+//                 answerContainers[i].style.color = 'red'; 
+//             }
+          
 //         }
-    
+//         //show number of correct answers out of total
+//         resultsContainer.innerHTML = numCorrect + ' out of ' + questions.length;
+// 	}
+
+// 	// show the questions
+// 	showQuestions(questions, quizContainer);
+
+// 	// when user clicks submit, show results
+// 	submitButton.onclick = function(){
+// 		showResults(questions, quizContainer, resultsContainer);
+// 	}
 // }
 
-// // 1. create a array with objects--question and choices
-// let questions = [ 
-//     {
-//     question: "Who is the best javascript mentor?",
-//     imgSrc: "img/picture2.png",
-//     a: "TJ",
-//     b: "Al Einstein",
-//     c: "Nik Tesla",
-//     // d: "John Connor",
-//     correct: "a"
-// },
-//     {
-//     question: "What is the most popular javascript library or framework?",
-//     imgSrc: "img/picture2.png",
-//     a: "Angular",
-//     b: "Vue",
-//     c: "React",
-//     // d: "Other",
-//     correct: "c"  
-// },
-//     {
-//     question: "What is the most popular front end programming language?",
-//     imgSrc: "img/picture2.png",
-//     a: "Html",
-//     b: "JavaScript",
-//     c: "CSS",
-//     // d: "Other",
-//     correct: "b"
-// }
-//  ];
+
+// generateQuiz(myQuestions, quizContainer, resultsContainer, submitButton);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
