@@ -1,5 +1,9 @@
 
 
+
+
+//////////////////////////////////////////////////////////
+
 //Baseline SetUp
 // //Variables
 // const quizContainer = document.getElementById('quiz');
@@ -126,7 +130,7 @@
 
 
 
-
+/////////////////////////////////////////
 
 // //Structure
 // function generateQuiz(questions, quizContainer, resultsContainer, submitButton){

@@ -1,4 +1,4 @@
-body{
+/* body{
 	font-size: 20px;
 	font-family: sans-serif;
 	color: #333;
@@ -25,6 +25,28 @@ body{
 }
 #submit:hover{
 	background-color: #3a8;
+} */
+/*
+make the slides sit as layers on top of one another.
+use z-indexes and opacity transitions to allow the slides to fade in and out.
+*/
+.slide{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+.active-slide{
+    opacity: 1;
+    z-index: 2;
+}
+.quiz-container{
+    position: relative;
+    height: 200px; 
+    margin-top: 40px;
 }
 
 /* body{
