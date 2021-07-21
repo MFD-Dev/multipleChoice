@@ -1,223 +1,143 @@
+//1. func to start game
+//2. func to setNext  question
+//3. func to select answer 
+
+//variables 
+const startButton = document.getElementById('start-btn');  //1a
+const nextButton = document.getElementById('next-btn');  //1a
+const questionContainerElement = document.getElementById('question-container'); //2
+const questionElement = document.getElementById('question')
+const answerButtonsElement = document.getElementById('answer-buttons')
+
+//shuffle Variables
+let shuffledQuestions, currentQuestionIndex  //this will default both to undefined
 
 
+startButton.addEventListener('click', startGame);  //1b
+nextButton.addEventListener('click', () => {
+    currentQuestionIndex++
+    setNextQuestion()
+
+})
 
 
-//////////////////////////////////////////////////////////
+function startGame() {   
+    // console.log('Hello')
+    //hide btn
+    startButton.classList.add('hide')  //1c
+    shuffledQuestions = questions.sort(() => Math.random() - .5)
+     currentQuestionIndex = 0; //set to zero, to start at the beg of questions array
+    questionContainerElement.classList.remove('hide');  //2
+    setNextQuestion()
 
-//Baseline SetUp
-// //Variables
-// const quizContainer = document.getElementById('quiz');
-// const resultsContainer = document.getElementById('results');
-// const submitButton = document.getElementById('submit');
+}
 
-// // create our questions
-// const  myQuestions = [
-//     {
-//     question: "Who is the best javascript mentor?",
-//     answers: { 
-//     // imgSrc: "img/picture2.png",
-//     a: "TJ",
-//     b: "Al Einstein",
-//     c: "Nik Tesla",
-//     d: "John Connor",
-//     },
-//      correctAnswer: "a"
-// },
-//     {
-//     question: "What is the most popular javascript library or framework?",
-//     answers: { 
-//     // imgSrc: "img/picture2.png",
-//     a: "Angular",
-//     b: "Vue",
-//     c: "React",
-//     d: "Other",
-//     },
-//      correctAnswer: "c"  
-// },
-//     {
-//     question: "What is the most popular front end programming language?",
-//     answers: { 
-//     // imgSrc: "img/picture2.png",
-//     a: "Html",
-//     b: "JavaScript",
-//     c: "CSS",
-//     d: "Other",
-//     },
-//     correctAnswer: "b"
-// }
-//  ];
+function setNextQuestion() {
+    resetState() //going to reset everything after ea question
+    showQuestion(shuffledQuestions[currentQuestionIndex])
+    
+}
 
-// //Functions
-// function buildQuiz(){
-//   // variable to store the HTML output
-//   const output = [];
-
-//   // for each question...
-//   myQuestions.forEach(
-//     (currentQuestion, questionNumber) => {
-
-//         // console.log('hello')
-//       // variable to store the list of possible answers
-//       const answers = [];
-
-//       // and for each available answer...
-//       for(letter in currentQuestion.answers){
-
-//         // ...add an HTML radio button
-//         answers.push(
-//           `<label>
-//             <input type="radio" name="question${questionNumber}" value="${letter}">
-//             ${letter} :
-//             ${currentQuestion.answers[letter]}
-//           </label>`
-//         );
-//       }
-
-//       // add this question and its answers to the output
-//       output.push(
-//         `<div class="question"> ${currentQuestion.question} </div>
-//         <div class="answers"> ${answers.join('')} </div>`
-//       );
-//     }
-//   );
-
-//   // finally combine our output list into one string of HTML and put it on the page
-//   quizContainer.innerHTML = output.join('');
-// }
+function showQuestion(question) {
+   
+    // console.log('showQuestions')
+    questionElement.innerText = question.question; //reading question variable
+    question.answers.forEach(answer => {  //loop thrgh get single answer
+        const button = document.createElement('button')  // create a btn
+        button.innerText = answer.text  // set the answer
+        button.classList.add('btn')
+        if(answer.correct) {  //check if answer is correct
+            button.dataset.correct = answer.correct  //adds a data attr to btn ele
+            // only due this for the correct answer.  if did it for all then it would 
+            // be difficult to tell which is a string or not.  Because it would be a string
+            // and not a boolean.
+        }
+        button.addEventListener('click', selectAnswer) //add a event to selAns func.  
+        //it will take event as a parameter. then add param to selAns param
+        answerButtonsElement.appendChild(button)  //last is add to this ele
+    })
 
 
-// function showResults() {
-//     //gather answer containers from our quiz
-//     const answerContainers = quizContainer.querySelectorAll('.answers');
+}
 
-//     //keep track of user's answers
-//     let numCorrect = 0;
+//last funct created
+function resetState() {
+    clearStatusClass(document.body)
+    nextButton.classList.add('hide') //hide the button
+    while (answerButtonsElement.firstChild){  //loop through all children of ans btn ele
+        //if there is a child inside of ans btn ele then remove it.
+        answerButtonsElement.removeChild
+        (answerButtonsElement.firstChild)
+    }
+}
 
-//     //for each question...
-//     myQuestions.forEach((currentQuestion, questionNumber) => {
-//         //find selected answer 
-//         const answerContainer = answerContainers[questionNumber];
-//         const selector = `input[name=question${questionNumber}]:checked`;
-//         const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+function selectAnswer(e) {  //add a param taking event in as a param
+// now the last part is to add the btn selection functionality
+const selectedButton = e.target //this is the btn that is selected
+const correct = selectedButton.dataset.correct  // check to see if btn is correct
+setStatusClass(document.body, correct)  // see if it needs to be set to correct or wrong.
+Array.from(answerButtonsElement.children).forEach(button => { //loop thrgh all other btns&set class
+    //have to convert to array; ansBtn.chlrn is a live collection and updates on it's own
+    //need to convert to array to use w/forEa loop
+    setStatusClass(button, button.dataset.correct)//create a function below
 
-//         //if answer is correct 
-//         if(userAnswer === currentQuestion.correctAnswer){
-//             //add to the number of correct answers 
-//             numCorrect++;
+})
+if (shuffledQuestions.length > currentQuestionIndex + 1){
+    nextButton.classList.remove('hide');
+} else {
+    startButton.innerText = 'Restart'
+    startButton.classList.remove('hide')
+}
 
-//             //color the answers green
-//             answerContainers[questionNumber].style.color = 'lightgreen';
-//         }
-//         //if answer is wrong or blank
-//         else{
-//             //color the answers red
-//             answerContainers[questionNumber].style.color = 'red';
-//         }
-//         //show number of correct answers out of total
-//         resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
-//     });
+}
 
-// }
+function setStatusClass(element, correct) {
+    clearStatusClass(element)
+    if(correct) {
+        element.classList.add('correct')
+    } else {
+         element.classList.add('wrong')
+    }
+}
+//exact opposite for above
+function clearStatusClass(element) {
+    element.classList.remove('correct')
+    element.classList.remove('wrong')
+}
 
-// //display quiz right away
-// buildQuiz();
+const questions = [
+    {
+        question: "Who is the best javascript mentor?",
+        answers: [
+            {text: 'TJ', correct: true},
+            {text: 'Al Einstein', correct : false},
+            {text: 'Nik Tesla', correct : false},
+            {text: 'John Connor', correct : false}
 
-// //Event Listeners -- on submit; show results
-// submitButton.addEventListener('click', showResults);
+        ]
+    },
+    {
+        question: "What is the most popular javascript library or framework?",
+        answers: [
+            {text: 'Angular', correct: false},
+            {text: 'Vue', correct : false},
+            {text: 'React', correct : true},
+            {text: 'Other', correct : false}
 
+        ]
+    },
+    {
+        question: "What is the most popular front end programming language?",
+        answers: [
+            {text: 'HTML', correct: false},
+            {text: 'JavaScript', correct : true},
+            {text: 'CSS', correct : false},
+            {text: 'Other', correct : false}
 
-
-
-
-
-/////////////////////////////////////////
-
-// //Structure
-// function generateQuiz(questions, quizContainer, resultsContainer, submitButton){
-
-// function showQuestions(questions, quizContainer){
-// 	// we'll need a place to store the output and the answer choices
-// 	var output = [];
-// 	var answers;
-
-// 	// for each question...
-// 	for(var i=0; i<questions.length; i++){
-		
-// 		// first reset the list of answers
-// 		answers = [];
-
-// 		// for each available answer to this question...
-// 		for(letter in questions[i].answers){
-
-// 			// ...add an html radio button
-// 			answers.push(
-// 				'<label>'
-// 					+ '<input type="radio" name="question'+i+'" value="'+letter+'">'
-// 					+ letter + ': ' 
-// 					+ questions[i].answers[letter] 
-// 				+ '</label>'
-// 			);
-// 		}
-
-// 		// add this question and its answers to the output
-// 		output.push(
-// 			'<div class="question">' + questions[i].question + '</div>'
-// 			+ '<div class="answers">' + answers.join('') + '</div>'
-// 		);
-// 	}
-
-// 	// finally combine our output list into one string of html and put it on the page
-// 	quizContainer.innerHTML = output.join('');
-// }
-
-// 	function showResults(questions, quizContainer, resultsContainer){
-//         console.log('hello')
-// 		//gather answer containers from quiz  
-//         var answerContainers = quizContainer.querySelectorAll('.answers');
-
-//         //keep track of users answers 
-//         var userAnswer = '';
-//         var numCorrect = 0;
-
-//         //for each question
-//         for(var i = 0; i < questions.length; i++){
-//             //find selected answer 
-//             userAnswer = (answerContainers[i].querySelector('input[name=question'+i+']:checked')||{}).value;
-
-//             //if answer is Correct
-//             if(userAnswer===questions[i].correctAnswer){
-//                 //add to the number of correct answers
-//                 numCorrect++;
-//                 //color the answers green
-//                 answerContainers[i].style.color = 'lightgreen';
-//             }
-//             // else if(userAnswer !== questions[i].correctAnswer){
-//             //      var showCorrect = correctAnswer.style.color = 'lightgreen';
-//             // }
-//             //if answer is wrong or blank
-//             else {
-//                 // color the answers red                     
-//                 answerContainers[i].style.color = 'red'; 
-//             }
-          
-//         }
-//         //show number of correct answers out of total
-//         resultsContainer.innerHTML = numCorrect + ' out of ' + questions.length;
-// 	}
-
-// 	// show the questions
-// 	showQuestions(questions, quizContainer);
-
-// 	// when user clicks submit, show results
-// 	submitButton.onclick = function(){
-// 		showResults(questions, quizContainer, resultsContainer);
-// 	}
-// }
-
-
-// generateQuiz(myQuestions, quizContainer, resultsContainer, submitButton);
-
-
+        ]
+    },
+    
+]
 
 
 

@@ -1,54 +1,92 @@
-/* body{
-	font-size: 20px;
-	font-family: sans-serif;
-	color: #333;
+*{
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
-.question{
-	font-weight: 600;
+/*variables for answer colors*/
+:root{
+    --hue-neutral: 200;
+    --hue-wrong: 0;
+    --hue-correct: 145;
 }
-.answers {
-    margin-bottom: 20px;
-}
-#submit{
+body{
+    --hue: var(--hue-neutral); /*default color when nothing is selected*/
+    padding: 0;
+    margin: 0;
     display: flex;
-    text-align: center;
+    align-items: center;
     justify-content: center;
-	font-family: sans-serif;
-	font-size: 20px;
-	background-color: #297;
-	color: #fff;
-	border: 0px;
-	border-radius: 3px;
-	padding: 20px;
-	cursor: pointer;
-	margin-bottom: 20px;
+    width: 100vw;
+    height: 100vh;
+    background-color:hsl(var(--hue), 100%, 20%);
 }
-#submit:hover{
-	background-color: #3a8;
-} */
-/*
-make the slides sit as layers on top of one another.
-use z-indexes and opacity transitions to allow the slides to fade in and out.
-*/
-.slide{
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 100%;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 0.5s;
+/*use classes to change colors*/
+body.correct{
+    --hue: var(--hue-correct);
 }
-.active-slide{
-    opacity: 1;
-    z-index: 2;
+body.wrong{
+    --hue: var(--hue-wrong);
 }
-.quiz-container{
-    position: relative;
-    height: 200px; 
-    margin-top: 40px;
+/*card effect for container*/
+.container{
+    width: 800px;
+    max-width: 80%;
+    background-color:white;
+    border-radius:5px;
+    padding: 10px;
+    box-shadow: 0 0 10px 2px;
+}
+/*style answer grid*/
+.btn-grid{
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 10px;
+    margin: 20px 0;
+}
+/* style buttons*/
+.btn {
+    --hue: var(--hue-neutral);
+    border: 1px solid ;
+    background-color:hsl(var(--hue), 100%, 50%);
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: white;
+    outline: none;
+}
+/*hover*/
+.btn:hover {
+    border-color: black;
+}
+/* add color class to buttons for correct/wrong answers. then test*/
+.btn.correct {
+    --hue: var(--hue-correct);
+    color: black;
 }
 
+.btn.wrong {
+    --hue: var(--hue-wrong);
+}
+/* style start and next btn's*/
+.start-btn, .next-btn {
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 20px;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/*hide quiz */
+.hide {
+    display: none;
+}
+
+
+
+
+
+/* ------------------------------------------------------------------------------- */
 /* body{
     font-size: 20px;
     font-family: monospace;
